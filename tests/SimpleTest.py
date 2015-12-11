@@ -1,4 +1,4 @@
-#define mac
+#define pi
 
 #ifdef mac
 import cv2
