@@ -40,6 +40,9 @@ def main():
     observer.schedule(Handler(), input)
     observer.start()
 
+    print "Watching " + input
+    print "To terminate, hit CTRL + C"
+
     try:
         while True:
             time.sleep(1)
@@ -73,34 +76,32 @@ def preprocess(inputPath):
         elif "#ifdef mac" in line:
             # mac declaration
             currentDeclaration = Declaration(index, "mac")
-            print "Found Mac declaration"
 
         elif "#ifdef pi" in line:
             # pi declaration
             currentDeclaration = Declaration(index, "pi")
-            print "Found Pi declaration"
 
         elif "#endif" in line:
             # end of declaration
             currentDeclaration.end = index
             declarations.insert(0,currentDeclaration)
-            print "Declaration closed. Start line: " + `currentDeclaration.start` + " End line: " + `currentDeclaration.end`
+            print "Found conditional. Start line: " + `currentDeclaration.start` + " End line: " + `currentDeclaration.end`
 
         index = index+1
 
     if platform is "" and currentDeclaration is None:
-        print "No platform declaration or conditionals. Will not compile file."
+        print "No platform declaration or conditionals. Will not preprocess file."
     elif platform is "" and currentDeclaration is not None:
-        print "No platform declaration. However, conditionals were found. Will not compile file."
+        print "No platform declaration. However, conditionals were found. Will not preprocess file."
     elif platform is not "" and currentDeclaration is None:
-        print "Platform declared. However, no conditionals were found. Will not compile file."
+        print "File preprocessed."
     else:
         print "Preprocessing file..."
         # create destination file
         outputFile = open(inputPath[:-3] + "-" + platform + ".py", "w")
         inputFile.seek(0, 0)
         lines = inputFile.readlines()
-        print lines
+
         for declaration in declarations:
 
             if platform is "mac":
@@ -122,8 +123,6 @@ def preprocess(inputPath):
                 elif declaration.platform is "mac":
                     # throw away declarations and code in between.
                     del lines[declaration.start:declaration.end+1]
-
-        print lines
 
         for line in lines:
             outputFile.write(line)

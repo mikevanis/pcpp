@@ -19,3 +19,7 @@ import otherpistuff
 #ifdef mac
 import macstuff
 #endif
+
+#ifdef pi
+import newPiStuff
+#endif
