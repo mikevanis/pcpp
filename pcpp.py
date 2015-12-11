@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 This is a preprocessor for cross-developing camera applications between
 Mac OS and the Raspberry Pi.
