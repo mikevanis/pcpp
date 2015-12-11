@@ -7,3 +7,15 @@ import cv2
 #ifdef pi
 import nothingness
 #endif
+
+#ifdef pi
+import pistuff
+#endif
+
+#ifdef pi
+import otherpistuff
+#endif
+
+#ifdef mac
+import macstuff
+#endif

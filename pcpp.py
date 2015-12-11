@@ -16,6 +16,7 @@ def main():
     # variables
     platform = ""
     index = 0
+    declarationIterator = 0
     currentDeclaration = None
     declarations = []
 
@@ -25,10 +26,10 @@ def main():
     ap.add_argument("-d", "--dest", required=True, help="destination for the result")
     args = vars(ap.parse_args())
 
-    # open file
+    # open source file (read-only)
     inputFile = open(args["source"])
 
-    # work through lines
+    # Identify preprocessor conditionals and defs
     for line in inputFile:
         if "#define mac" in line:
             # we're compiling for mac.
@@ -53,10 +54,45 @@ def main():
         elif "#endif" in line:
             # end of declaration
             currentDeclaration.end = index
-            declarations.append(currentDeclaration)
+            declarations.insert(0,currentDeclaration)
             print "Declaration closed. Start line: " + `currentDeclaration.start` + " End line: " + `currentDeclaration.end`
 
         index = index+1
+
+    # create destination file
+    outputFile = open(args["dest"], "w")
+    inputFile.seek(0, 0)
+    lines = inputFile.readlines()
+    print lines
+    for declaration in declarations:
+
+        if platform is "mac":
+            if declaration.platform is "mac":
+                # remove declarations, but keep code in between.
+                del lines[declaration.start]
+                del lines[declaration.end-1]
+
+            elif declaration.platform is "pi":
+                # throw away declarations and code in between.
+                del lines[declaration.start:declaration.end+1]
+
+        elif platform is "pi":
+            if declaration.platform is "pi":
+                # remove declarations, but keep code in between.
+                del lines[declaration.start]
+                del lines[declaration.end-1]
+
+            elif declaration.platform is "mac":
+                # throw away declarations and code in between.
+                del lines[declaration.start:declaration.end+1]
+
+    print lines
+
+    for line in lines:
+        outputFile.write(line)
+
+    outputFile.close()
+    inputFile.close()
 
 if __name__ == '__main__':
     main()
